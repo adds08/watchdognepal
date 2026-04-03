@@ -1,133 +1,156 @@
 {% extends 'base.html' %}
 {% load nepali_dates %}
 
-{% block title %}Activities Feed — Watchdog Nepal{% endblock %}
+{% block title %}Activities Feed — Simple Civic{% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-5">
+<div class="max-w-6xl mx-auto px-6 py-12">
 
   <!-- Page Header -->
-  <div class="wn-section-header animate-fade-in-up">
-    <div class="section-icon blue">
-      <i class="bi bi-activity"></i>
+  <header class="mb-12">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-12 h-12 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center">
+        <span class="material-symbols-outlined text-3xl">dynamic_feed</span>
+      </div>
+      <div>
+        <h1 class="text-4xl font-black font-headline text-on-surface tracking-tighter">Live Activities Feed</h1>
+        <p class="text-on-surface-variant font-medium mt-1">
+          Crowdsourced and verified updates on government actions across all levels.
+        </p>
+      </div>
     </div>
-    <div>
-      <h2 class="mb-0">Government Activities</h2>
-      <p class="mb-0" style="font-size: 0.82rem; color: var(--wn-text-muted);">
-        Track and verify government actions across all levels
-      </p>
-    </div>
-  </div>
+  </header>
 
-  <!-- Filter Bar -->
-  <div class="wn-filter-bar mb-4 animate-fade-in-up animate-delay-1">
-    <form method="GET" class="d-flex flex-wrap align-items-end gap-3">
+  <div class="flex flex-col lg:flex-row gap-8 items-start">
 
-      <div>
-        <label for="level-select" class="form-label mb-1">Level</label>
-        <select name="level" id="level-select" class="form-select form-select-sm" style="min-width: 130px;">
-          <option>All</option>
-          <option {% if request.GET.level == 'Federal' %}selected{% endif %}>Federal</option>
-          <option {% if request.GET.level == 'Provincial' %}selected{% endif %}>Provincial</option>
-          <option {% if request.GET.level == 'Local' %}selected{% endif %}>Local</option>
-        </select>
-      </div>
+    <!-- Filter Sidebar -->
+    <aside class="w-full lg:w-64 flex-shrink-0 bg-surface-container-lowest border border-outline-variant/20 rounded-xl p-6 sticky top-24">
+      <h3 class="font-headline font-bold text-lg mb-4 text-on-surface">Filters</h3>
+      <form method="GET" class="space-y-6">
 
-      <div>
-        <label for="status-select" class="form-label mb-1">Status</label>
-        <select name="status" id="status-select" class="form-select form-select-sm" style="min-width: 130px;">
-          <option>All</option>
-          <option {% if request.GET.status == 'Verified' %}selected{% endif %}>Verified</option>
-          <option {% if request.GET.status == 'Unverified' %}selected{% endif %}>Unverified</option>
-        </select>
-      </div>
+        <!-- Level -->
+        <div>
+          <label for="level-select" class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Level</label>
+          <select name="level" id="level-select" class="w-full bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-secondary/20 py-3">
+            <option>All</option>
+            <option {% if request.GET.level == 'Federal' %}selected{% endif %}>Federal</option>
+            <option {% if request.GET.level == 'Provincial' %}selected{% endif %}>Provincial</option>
+            <option {% if request.GET.level == 'Local' %}selected{% endif %}>Local</option>
+          </select>
+        </div>
 
-      <div>
-        <label for="sort-select" class="form-label mb-1">Sort by</label>
-        <select name="sort" id="sort-select" class="form-select form-select-sm" style="min-width: 150px;">
-          <option {% if request.GET.sort == 'Newest' or not request.GET.sort %}selected{% endif %}>Newest</option>
-          <option {% if request.GET.sort == 'Oldest' %}selected{% endif %}>Oldest</option>
-          <option {% if request.GET.sort == 'Most Positive' %}selected{% endif %}>Most Positive</option>
-          <option {% if request.GET.sort == 'Most Negative' %}selected{% endif %}>Most Negative</option>
-        </select>
-      </div>
+        <!-- Status -->
+        <div>
+          <label for="status-select" class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Status</label>
+          <select name="status" id="status-select" class="w-full bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-secondary/20 py-3">
+            <option>All</option>
+            <option {% if request.GET.status == 'Verified' %}selected{% endif %}>Verified</option>
+            <option {% if request.GET.status == 'Unverified' %}selected{% endif %}>Unverified</option>
+          </select>
+        </div>
 
-      <button type="submit" class="btn btn-apply">
-        <i class="bi bi-funnel me-1"></i> Apply
-      </button>
-    </form>
-  </div>
+        <!-- Sort -->
+        <div>
+          <label for="sort-select" class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Sort by</label>
+          <select name="sort" id="sort-select" class="w-full bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-secondary/20 py-3">
+            <option {% if request.GET.sort == 'Newest' or not request.GET.sort %}selected{% endif %}>Newest</option>
+            <option {% if request.GET.sort == 'Oldest' %}selected{% endif %}>Oldest</option>
+            <option {% if request.GET.sort == 'Most Positive' %}selected{% endif %}>Most Positive</option>
+            <option {% if request.GET.sort == 'Most Negative' %}selected{% endif %}>Most Negative</option>
+          </select>
+        </div>
 
-  <!-- Activities -->
-  <div>
-    {% for activity in activities %}
-    <div
-      class="wn-activity-card {% if activity.status == 'verified' %}verified{% else %}unverified{% endif %} animate-fade-in-up"
-      style="animation-delay: {{ forloop.counter0 }}00ms;">
-      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
-        <h5 class="activity-title mb-0">{{ activity.title }}</h5>
-        <div class="d-flex gap-2 flex-wrap">
-          <span class="wn-badge-level">
-            <i class="bi bi-geo-alt me-1"></i>{{ activity.get_level_display }}
-          </span>
-          {% if activity.status == "verified" %}
-          <span class="wn-badge-verified">
-            <i class="bi bi-patch-check-fill"></i> Verified
-          </span>
+        <button type="submit" class="w-full bg-secondary text-white font-label font-bold text-xs uppercase tracking-widest py-3 rounded-lg hover:bg-secondary/90 transition-colors flex items-center justify-center gap-2 shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">filter_list</span> Apply Filters
+        </button>
+        <a href="{% url 'submit_activity' %}" class="w-full bg-primary text-white font-label font-bold text-xs uppercase tracking-widest py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 mt-3 shadow-md shadow-primary/20">
+          <span class="material-symbols-outlined text-[18px]">add_circle</span> Report Issue
+        </a>
+      </form>
+    </aside>
+
+    <!-- Activities List -->
+    <div class="flex-grow w-full space-y-6">
+      {% for activity in activities %}
+      <article class="bg-surface-container-lowest border border-outline-variant/15 rounded-xl p-6 hover:shadow-md transition-shadow relative overflow-hidden group">
+        {% if activity.status == "verified" %}
+          <div class="absolute top-0 right-0 p-4 z-10">
+            <span class="bg-secondary/10 text-secondary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1">
+              <span class="material-symbols-outlined text-[12px]">verified</span> Verified
+            </span>
+          </div>
+        {% else %}
+          <div class="absolute top-0 right-0 p-4 z-10">
+            <span class="bg-surface-container-highest text-on-surface-variant text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-1">
+              <span class="material-symbols-outlined text-[12px]">pending</span> Unverified
+            </span>
+          </div>
+        {% endif %}
+
+        <div class="mb-4 pr-24">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+              <span class="material-symbols-outlined text-[12px]">account_balance</span> {{ activity.get_level_display }}
+            </span>
+          </div>
+          <h3 class="text-xl font-bold font-headline leading-tight text-on-surface">{{ activity.title }}</h3>
+        </div>
+
+        <p class="text-on-surface-variant text-sm mb-4 leading-relaxed">{{ activity.description }}</p>
+
+        {% if activity.manifesto_point %}
+        <div class="mb-4">
+          {% if activity.manifesto_point.party %}
+          <a href="{% url 'party_detail' activity.manifesto_point.party.id %}#heading{{ activity.manifesto_point.id }}"
+            class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-container text-secondary rounded-lg text-xs font-semibold hover:bg-secondary/10 transition-colors">
+            <span class="material-symbols-outlined text-[14px]">link</span>
+            {{ activity.manifesto_point.title }} — {{ activity.manifesto_point.party.name }}
+          </a>
           {% else %}
-          <span class="wn-badge-unverified">
-            <i class="bi bi-clock"></i> Unverified
-          </span>
+          <a href="{% url 'elected_member_detail' activity.manifesto_point.elected_member.id %}#heading{{ activity.manifesto_point.id }}"
+            class="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-container text-secondary rounded-lg text-xs font-semibold hover:bg-secondary/10 transition-colors">
+            <span class="material-symbols-outlined text-[14px]">link</span>
+            {{ activity.manifesto_point.title }} — {{ activity.manifesto_point.elected_member.name }}
+          </a>
           {% endif %}
         </div>
-      </div>
-
-      <p class="activity-desc mb-2">{{ activity.description }}</p>
-
-      <div class="d-flex align-items-center gap-2 flex-wrap mb-3"
-        style="font-size: 0.78rem; color: var(--wn-text-light);">
-        <span><i class="bi bi-person me-1"></i>{{ activity.created_by }}</span>
-        <span>·</span>
-        <span><i class="bi bi-calendar3 me-1"></i>{{ activity.created_at|to_bs }}</span>
-      </div>
-
-      {% if activity.manifesto_point %}
-      <div class="mb-3">
-        {% if activity.manifesto_point.party %}
-        <a href="{% url 'party_detail' activity.manifesto_point.party.id %}#heading{{ activity.manifesto_point.id }}"
-          class="wn-manifesto-chip">
-          <i class="bi bi-link-45deg"></i>
-          {{ activity.manifesto_point.title }} — {{ activity.manifesto_point.party.name }}
-        </a>
-        {% else %}
-        <a href="{% url 'elected_member_detail' activity.manifesto_point.elected_member.id %}#heading{{ activity.manifesto_point.id }}"
-          class="wn-manifesto-chip">
-          <i class="bi bi-link-45deg"></i>
-          {{ activity.manifesto_point.title }} — {{ activity.manifesto_point.elected_member.name }}
-        </a>
         {% endif %}
-      </div>
-      {% endif %}
 
-      <div class="d-flex align-items-center gap-3">
-        <div class="wn-vote-btn up">
-          <i class="bi bi-hand-thumbs-up"></i>
-          <span>{{ activity.positive_votes }}</span>
+        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+          <div class="flex items-center gap-3 text-xs text-slate-500 font-medium">
+            <div class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">person</span> {{ activity.created_by }}
+            </div>
+            <span>•</span>
+            <div class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">calendar_today</span> {{ activity.created_at|to_bs }}
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition-colors font-bold text-xs">
+              <span class="material-symbols-outlined text-[16px]">thumb_up</span> {{ activity.positive_votes }}
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 transition-colors font-bold text-xs">
+              <span class="material-symbols-outlined text-[16px]">thumb_down</span> {{ activity.negative_votes }}
+            </button>
+          </div>
         </div>
-        <div class="wn-vote-btn down">
-          <i class="bi bi-hand-thumbs-down"></i>
-          <span>{{ activity.negative_votes }}</span>
+      </article>
+      {% empty %}
+      <div class="bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 rounded-xl p-12 text-center flex flex-col items-center justify-center">
+        <div class="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-4 text-on-surface-variant">
+          <span class="material-symbols-outlined text-3xl">dynamic_feed</span>
         </div>
+        <h4 class="text-xl font-bold font-headline mb-2 text-on-surface">No activities found</h4>
+        <p class="text-on-surface-variant text-sm mb-6">There are no reports matching your filters.</p>
+        <button onclick="document.getElementById('level-select').value='All'; document.getElementById('status-select').value='All'; document.getElementById('sort-select').value='Newest'; this.closest('form').submit();" class="px-6 py-2 bg-secondary text-white font-label font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-secondary/90 transition-colors">
+          Clear Filters
+        </button>
       </div>
+      {% endfor %}
     </div>
-    {% empty %}
-    <div class="wn-empty-state">
-      <div class="empty-icon"><i class="bi bi-clipboard-x"></i></div>
-      <h4>No activities found</h4>
-      <p class="mb-0">Try adjusting the filters or check back later.</p>
-    </div>
-    {% endfor %}
+
   </div>
-
 </div>
 {% endblock %}

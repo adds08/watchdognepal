@@ -1,51 +1,93 @@
 {% extends 'base.html' %}
-{% load django_bootstrap5 %}
 
-{% block title %}Submit Activity — Watchdog Nepal{% endblock %}
+{% block title %}Submit Activity — Simple Civic{% endblock %}
 
 {% block content %}
-<div class="container mt-5 mb-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
+<div class="max-w-3xl mx-auto px-6 py-12">
+  <div class="mb-6 animate-fade-in-up">
+    <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-secondary font-bold text-sm hover:underline">
+      <span class="material-symbols-outlined text-[18px]">arrow_back</span> Back to Home
+    </a>
+  </div>
 
-      <div class="wn-breadcrumb animate-fade-in-up">
-        <a href="{% url 'home' %}"><i class="bi bi-arrow-left me-1"></i>Back to Home</a>
-      </div>
+  <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl shadow-sm overflow-hidden animate-fade-in-up animate-delay-1">
+    <div class="p-8 md:p-10">
+      <header class="mb-8 flex items-center gap-4">
+        <div class="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+          <span class="material-symbols-outlined text-3xl">add_circle</span>
+        </div>
+        <div>
+          <h1 class="text-3xl font-black font-headline text-on-surface tracking-tighter">Submit Activity</h1>
+          <p class="text-on-surface-variant font-medium text-sm mt-1">Report verified actions or delays on government commitments.</p>
+        </div>
+      </header>
 
-      <div class="wn-submit-card animate-fade-in-up animate-delay-1">
-        <div class="card-body p-4 p-md-5">
-          <h2 style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.5rem;" class="mb-4">
-            <i class="bi bi-send me-2" style="color: var(--wn-blue);"></i>
-            Submit Government Activity
-          </h2>
-
-          <div class="wn-info-alert mb-4">
-            <i class="bi bi-info-circle-fill me-2" style="color: var(--wn-blue);"></i>
-            <strong>Important:</strong>
-            After the link is provided, we will verify and accept as soon as possible.
-            <code
-              style="background: rgba(59,130,246,0.08); padding: 0.1rem 0.3rem; border-radius: 3px;">verified source</code>
-            or
-            <code
-              style="background: rgba(59,130,246,0.08); padding: 0.1rem 0.3rem; border-radius: 3px;">government</code>
-            domain.
-          </div>
-
-          <form method="POST" novalidate>
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <div class="d-grid mt-4">
-              <button type="submit" class="wn-btn-primary justify-content-center">
-                <i class="bi bi-send me-1"></i> Submit Activity
-              </button>
-            </div>
-          </form>
+      <div class="bg-blue-50 border-l-4 border-secondary p-4 rounded-r-lg mb-8 text-sm text-blue-900 flex gap-3">
+        <span class="material-symbols-outlined text-secondary mt-0.5">info</span>
+        <div>
+          <strong>Verification Notice:</strong> Submitted activities are manually reviewed. Please provide links from recognized news sources or official <code class="bg-blue-100 px-1.5 py-0.5 rounded text-secondary font-mono text-xs">.gov.np</code> domains.
         </div>
       </div>
 
+      <form method="POST" novalidate class="space-y-6">
+        {% csrf_token %}
+
+        <!-- We use Tailwind forms plugin or basic utility classes for standard fields. Django form renders HTML.
+             To style it nicely without django_bootstrap5, we can wrap the form or style the inputs globally.
+             Assuming forms plugin handles basic input styling, we'll just render the form. -->
+        <div class="prose max-w-none prose-sm form-container">
+            {% for field in form %}
+            <div class="mb-5">
+                <label for="{{ field.id_for_label }}" class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <p class="text-xs text-slate-500 mt-1">{{ field.help_text }}</p>
+                {% endif %}
+                {% if field.errors %}
+                <ul class="text-error text-xs font-bold mt-1 list-none p-0">
+                    {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="pt-4 border-t border-slate-100">
+          <button type="submit" class="w-full bg-primary text-white font-label font-bold text-sm uppercase tracking-widest py-4 rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-md shadow-primary/20">
+            <span class="material-symbols-outlined">send</span> Submit Report for Verification
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
+
+<style>
+    /* Add some basic Tailwind form styling for the generated Django inputs */
+    .form-container input[type="text"],
+    .form-container input[type="url"],
+    .form-container select,
+    .form-container textarea {
+        width: 100%;
+        background-color: #f3f4f5; /* surface-container-low */
+        border: 1px solid #e1e3e4; /* surface-variant */
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        color: #191c1d; /* on-surface */
+        transition: all 0.2s;
+    }
+    .form-container input[type="text"]:focus,
+    .form-container input[type="url"]:focus,
+    .form-container select:focus,
+    .form-container textarea:focus {
+        outline: none;
+        border-color: #335ab4; /* secondary */
+        box-shadow: 0 0 0 2px rgba(51, 90, 180, 0.2);
+    }
+</style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {

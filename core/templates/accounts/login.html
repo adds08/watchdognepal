@@ -1,77 +1,107 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load django_bootstrap5 %}
 {% load socialaccount %}
 
-{% block title %}Login — Watchdog Nepal{% endblock %}
+{% block title %}Login — Simple Civic{% endblock %}
 
 {% block content %}
-<div class="container mt-5 mb-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-5 col-md-7 col-sm-10">
+<div class="max-w-md mx-auto px-6 py-12">
 
-      <div class="text-center mb-4 animate-fade-in-up">
-        <img src="{% static 'favicon.png' %}" alt="Watchdog Nepal Logo" width="64" height="64" class="mb-3">
-        <h2 style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.75rem;">
-          Welcome Back
-        </h2>
-        <p style="font-size: 0.88rem; color: var(--wn-text-muted);">
-          Sign in to your Watchdog Nepal account
-        </p>
-      </div>
-
-      <div class="wn-auth-card animate-fade-in-up animate-delay-1">
-        <div class="card-body">
-
-          {% if form %}
-          <form method="POST" novalidate>
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <div class="d-grid mt-4">
-              <button type="submit" class="wn-btn-primary justify-content-center">
-                <i class="bi bi-box-arrow-in-right me-1"></i> Login
-              </button>
-            </div>
-          </form>
-          {% else %}
-          <form method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-              <label for="id_username" class="form-label fw-medium" style="font-size: 0.85rem;">Username</label>
-              <input type="text" name="username" id="id_username" class="form-control" />
-            </div>
-            <div class="mb-3">
-              <label for="id_password" class="form-label fw-medium" style="font-size: 0.85rem;">Password</label>
-              <input type="password" name="password" id="id_password" class="form-control" />
-            </div>
-            <div class="d-grid mt-4">
-              <button type="submit" class="wn-btn-primary justify-content-center">
-                <i class="bi bi-box-arrow-in-right me-1"></i> Login
-              </button>
-            </div>
-          </form>
-          {% endif %}
-
-          <div class="mt-4">
-            <div class="position-relative mb-4 text-center">
-              <hr class="w-100">
-              <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted" style="font-size: 0.75rem;">OR</span>
-            </div>
-            
-            <a href="{% provider_login_url 'google' %}" class="btn btn-outline-dark w-100 py-2 d-flex align-items-center justify-content-center" style="font-size: 0.9rem; border-radius: var(--wn-radius-md); border-color: #ced4da;">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" width="18" height="18" class="me-2">
-              Continue with Google
-            </a>
-          </div>
-
-          <p class="mt-4 text-center mb-0" style="font-size: 0.82rem; color: var(--wn-text-muted);">
-            Don't have an account?
-            <a href="{% url 'register' %}" style="color: var(--wn-blue); font-weight: 600;">Register here</a>
-          </p>
-        </div>
-      </div>
-
+  <div class="text-center mb-8 animate-fade-in-up">
+    <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-xl shadow-sm border border-outline-variant/20 mb-6">
+      <img src="{% static 'favicon.png' %}" alt="Watchdog Nepal Logo" width="40" height="40">
     </div>
+    <h2 class="text-3xl font-black font-headline text-on-surface tracking-tighter">
+      Welcome Back
+    </h2>
+    <p class="text-sm font-medium text-on-surface-variant mt-2">
+      Sign in to your Simple Civic account
+    </p>
+  </div>
+
+  <div class="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl shadow-sm p-8 animate-fade-in-up animate-delay-1 form-container">
+    {% if form %}
+    <form method="POST" novalidate class="space-y-5">
+      {% csrf_token %}
+      {% for field in form %}
+      <div>
+        <label for="{{ field.id_for_label }}" class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+        <p class="text-xs text-slate-500 mt-1">{{ field.help_text }}</p>
+        {% endif %}
+        {% if field.errors %}
+        <ul class="text-error text-xs font-bold mt-1 list-none p-0">
+          {% for error in field.errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <div class="pt-2">
+        <button type="submit" class="w-full bg-primary text-white font-label font-bold text-sm uppercase tracking-widest py-3.5 rounded-xl hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">login</span> Login
+        </button>
+      </div>
+    </form>
+    {% else %}
+    <form method="POST" class="space-y-5">
+      {% csrf_token %}
+      <div>
+        <label for="id_username" class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Username</label>
+        <input type="text" name="username" id="id_username" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-colors" />
+      </div>
+      <div>
+        <label for="id_password" class="block font-label text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2">Password</label>
+        <input type="password" name="password" id="id_password" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-colors" />
+      </div>
+      <div class="pt-2">
+        <button type="submit" class="w-full bg-primary text-white font-label font-bold text-sm uppercase tracking-widest py-3.5 rounded-xl hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">login</span> Login
+        </button>
+      </div>
+    </form>
+    {% endif %}
+
+    <div class="mt-8">
+      <div class="relative mb-6 text-center">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-outline-variant/30"></div>
+        </div>
+        <span class="relative bg-surface-container-lowest px-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest">OR</span>
+      </div>
+
+      <a href="{% provider_login_url 'google' %}" class="w-full flex items-center justify-center gap-3 bg-white border border-outline-variant/50 text-on-surface font-label font-bold text-sm py-3.5 rounded-xl hover:bg-slate-50 transition-colors">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" width="18" height="18">
+        Continue with Google
+      </a>
+    </div>
+
+    <p class="mt-8 text-center text-sm font-medium text-on-surface-variant">
+      Don't have an account?
+      <a href="{% url 'register' %}" class="text-secondary font-bold hover:underline">Register here</a>
+    </p>
   </div>
 </div>
+
+<style>
+  .form-container input[type="text"],
+  .form-container input[type="password"] {
+      width: 100%;
+      background-color: #f3f4f5; /* surface-container-low */
+      border: 1px solid #e1e3e4; /* surface-variant */
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      color: #191c1d; /* on-surface */
+      transition: all 0.2s;
+  }
+  .form-container input[type="text"]:focus,
+  .form-container input[type="password"]:focus {
+      outline: none;
+      border-color: #335ab4; /* secondary */
+      box-shadow: 0 0 0 2px rgba(51, 90, 180, 0.2);
+  }
+</style>
 {% endblock %}
